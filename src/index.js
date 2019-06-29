@@ -62,6 +62,7 @@ export function keyFromMnemonic(mnemonic) {
         if(bip39.wordlists.hasOwnProperty) {
             try {
                 entropy = utils.toArray(bip39.mnemonicToEntropy(mnemonic, bip39.wordlists[lang]), 'hex')
+                break
             } catch(e) {
             }
         }
