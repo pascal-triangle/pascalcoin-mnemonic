@@ -15,6 +15,17 @@
                 <option>sect283k1</option>
                 <option>p521</option>
             </select>
+            <select id="lang">
+                <option>english</option>
+                <option>chinese_simplified</option>
+                <option>chinese_traditional</option>
+                <option>french</option>
+                <option>italian</option>
+                <option>japanese</option>
+                <option>korean</option>
+                <option>spanish</option>
+                <option>invalid_language</option>
+            </select>
             <input type="submit" value="Generate" />
             <div id="generate_output"></div>
         </form>
@@ -37,20 +48,28 @@
 function generateKey(e) {
     e.preventDefault()
     var curve = document.getElementById('curve').value
-    var newlyGeneratedKey = PascalMnemonic.generateKey(curve)
-    document.getElementById('generate_output').innerHTML =
-        'Mnemonic: ' + newlyGeneratedKey[0] + '<br/>' +
-        'Private Key: ' + newlyGeneratedKey[1]
-
+    var lang = document.getElementById('lang').value
+    try {
+        var newlyGeneratedKey = PascalMnemonic.generateKey(curve, lang)
+        document.getElementById('generate_output').innerHTML =
+            'Mnemonic: ' + newlyGeneratedKey[0] + '<br/>' +
+            'Private Key: ' + newlyGeneratedKey[1]
+    } catch(e) {
+        document.getElementById('generate_output').innerHTML = e
+    }
 }
 
 function restoreKey(e) {
     e.preventDefault()
     var mnemonic = document.getElementById('mnemonic').value
-    var restoredKey = PascalMnemonic.keyFromMnemonic(mnemonic)
-    document.getElementById('restore_output').innerHTML =
-        'Curve: ' + restoredKey[0] + '<br/>' +
-        'Private Key: ' + restoredKey[1]
+    try {
+        var restoredKey = PascalMnemonic.keyFromMnemonic(mnemonic)
+        document.getElementById('restore_output').innerHTML =
+            'Curve: ' + restoredKey[0] + '<br/>' +
+            'Private Key: ' + restoredKey[1]
+    } catch(e) {
+        document.getElementById('restore_output').innerHTML = e
+    }
 }
 
 

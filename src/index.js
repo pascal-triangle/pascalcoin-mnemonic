@@ -17,7 +17,11 @@ const EC = {
     p521: new elliptic('p521')
 }
 
-export function generateKey(curve) {
+export function generateKey(curve, lang='english') {
+
+    if(!bip39.wordlists.hasOwnProperty(lang)) {
+        throw new Error('Language not supported')
+    }
 
     if(!CURVE_MASKS.hasOwnProperty(curve)) {
         throw new Error('Curve not supported')
@@ -30,7 +34,7 @@ export function generateKey(curve) {
     entropy[0] = ( entropy[0] & ( ( VERSION_MASK | CURVE_MASK ) ^ 255 ) ) | CURVE_MASKS[curve]
 
     /* Generate the mnemonic from the entropy */
-    const mnemonic = bip39.entropyToMnemonic(entropy)
+    const mnemonic = bip39.entropyToMnemonic(entropy, bip39.wordlists[lang])
 
     let private_key = null
 
@@ -53,7 +57,19 @@ export function keyFromMnemonic(mnemonic) {
     }
 
     /* Convert mnemonic to entropy */
-    const entropy = utils.toArray(bip39.mnemonicToEntropy(mnemonic), 'hex')
+    let entropy = null
+    for(let lang in bip39.wordlists) {
+        if(bip39.wordlists.hasOwnProperty) {
+            try {
+                entropy = utils.toArray(bip39.mnemonicToEntropy(mnemonic, bip39.wordlists[lang]), 'hex')
+            } catch(e) {
+            }
+        }
+    }
+
+    if(entropy == null) {
+        throw new Error('Invalid mnemonic')
+    }
 
     /* Version must be zero */
     if(( entropy[0] & VERSION_MASK ) != 0) {
