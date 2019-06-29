@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>PascalCoin Mnemonic Tests</title>
+    </head>
+    <body>
+        <h1>PascalCoin Mnemonic Test</h1>
+
+        <h2>Generate new key</h2>
+        <form onsubmit="return generateKey(event)">
+            <select id="curve">
+                <option>secp256k1</option>
+                <option>p384</option>
+                <option>sect283k1</option>
+                <option>p521</option>
+            </select>
+            <input type="submit" value="Generate" />
+            <div id="generate_output"></div>
+        </form>
+
+        <hr />
+
+        <h2>Restore key</h2>
+        <form onsubmit="return restoreKey(event)">
+            <div>
+                <textarea style="width: 100%; height: 100px" id="mnemonic"></textarea>
+            </div>
+            <input type="submit" value="Restore" />
+            <div id="restore_output"></div>
+        </form>
+
+
+        <script type="text/javascript" src="../dist/lib.web.js"></script>
+        <script type="text/javascript">
+
+function generateKey(e) {
+    e.preventDefault()
+    var curve = document.getElementById('curve').value
+    var newlyGeneratedKey = PascalMnemonic.generateKey(curve)
+    document.getElementById('generate_output').innerHTML =
+        'Mnemonic: ' + newlyGeneratedKey[0] + '<br/>' +
+        'Private Key: ' + newlyGeneratedKey[1]
+
+}
+
+function restoreKey(e) {
+    e.preventDefault()
+    var mnemonic = document.getElementById('mnemonic').value
+    var restoredKey = PascalMnemonic.keyFromMnemonic(mnemonic)
+    document.getElementById('restore_output').innerHTML =
+        'Curve: ' + restoredKey[0] + '<br/>' +
+        'Private Key: ' + restoredKey[1]
+}
+
+
+
+function runTests() {
+    var CURVES = ['secp256k1', 'p384', 'sect283k1', 'p521']
+    console.log('Starting automatic tests')
+    for(var curve_name of CURVES) {
+        var newlyGeneratedKey = PascalMnemonic.generateKey(curve_name)
+        var restoredKey = PascalMnemonic.keyFromMnemonic(newlyGeneratedKey[0])
+        console.log('Test curve:', curve_name)
+        console.log(newlyGeneratedKey)
+        console.log(restoredKey)
+        if(newlyGeneratedKey[1] == restoredKey[1]) {
+            console.log('Passed')
+        } else {
+            console.log('Failed')
+        }
+        console.log('\n')
+    }
+    console.log('Ending automatic tests')
+}
+runTests()
+
+        </script>
+    </body>
+</html>
